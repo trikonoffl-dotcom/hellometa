@@ -227,7 +227,9 @@ export function create(st, A, tl) {
       const tm = cd.t0 + 0.38 + cd.ring;
       const state = t < tm ? 'incoming' : cd.vm ? 'voicemail' : 'missed';
       const flip = Math.abs(Math.cos(clamp((t - tm + 0.07) / 0.14) * Math.PI));
-      callCard(c1, x, y, cd.num, state, { s: 0.9 * (1 - 0.6 * q), alpha: (1 - q) * clamp((t - cd.t0) * 6), ring: 1, t, flip: Math.max(0.05, flip) });
+      const pv = cardPos(cd, t - 1 / 60);
+      const mb = clamp(Math.hypot(x - pv[0], y - pv[1]) / 7, 0, 9);
+      callCard(c1, x, y, cd.num, state, { blur: mb, s: 0.9 * (1 - 0.6 * q), alpha: (1 - q) * clamp((t - cd.t0) * 6), ring: 1, t, flip: Math.max(0.05, flip) });
       burst(c1, x - 180, y, t, tm, { n: 10, seed: cd.t0 * 100, color: '#9A9A9A', speed: 140, life: 0.6, size: 1.6 });
     }
     dim(c1, 0.62 * ep(t, 7.2, 7.6));
@@ -235,7 +237,7 @@ export function create(st, A, tl) {
     trackIn(c1, 'MISSED', CX, 700, o, prog(t, 7.3, 7.85));
     trackIn(c1, 'CALLS', CX, 815, o, prog(t, 7.38, 7.93));
     const eq = ep(t, 7.6, 7.95, E.outBack);
-    if (eq > 0) {
+    if (eq > 0.001) {
       c1.save();
       c1.translate(CX, 930);
       c1.scale(eq, eq);
@@ -354,7 +356,7 @@ export function create(st, A, tl) {
       const lineT = [18.35, 18.45, 18.9, 19.0, 19.45, 19.55, 19.75];
       details.set({
         x: CX, y: lerp(2500, 1230, dIn), z: lerp(0, -500, pb), s: 1.3, rx: lerp(-30, 0, dIn) + 88 * dOut, o: clamp(dIn * 2),
-        blur: 6 * pb * (1 - dOut), bright: lerp(1, 0.6, pb),
+        blur: 6 * pb * (1 - dOut) + 10 * (1 - dIn) ** 2, bright: lerp(1, 0.6, pb),
         lines: (i) => ({ clip: ep(t, lineT[i], lineT[i] + (i === 5 ? 0.5 : 0.3), E.inOutSine) }),
         wave: (i) => {
           const u = i / 71;
@@ -378,7 +380,7 @@ export function create(st, A, tl) {
     revealLine(c1, 'Hi, this is Angela calling', 80, 552, sm, prog(t, 19.55, 20.0), qo(2));
     revealLine(c1, 'from MetaWeb…', 80, 616, sm, prog(t, 19.65, 20.1), qo(3));
     const ba = ep(t, 20.0, 20.35, E.outBack) * (1 - ep(t, 20.4, 20.65));
-    if (ba > 0) {
+    if (ba > 0.001) {
       c1.save();
       c1.translate(CX, 1838);
       c1.scale(ba, ba);
@@ -464,7 +466,7 @@ export function create(st, A, tl) {
       });
       if (scanP > 0 && scanP < 1) queue.ov('scan', [33, scanY - 2, 1494, 4], `background:#FFD39A;box-shadow:0 0 18px 4px ${rgba(C.orange, 0.8)}`);
       queue.set({
-        x: CX, y: lerp(2400, 1390, qi) + qo * 900, s: 0.66, rx: lerp(-32, 4, qi) - qo * 30, o: clamp(qi * 2) * (1 - qo),
+        x: CX, y: lerp(2400, 1390, qi) + qo * 900, s: 0.66, rx: lerp(-32, 4, qi) - qo * 30, o: clamp(qi * 2) * (1 - qo), blur: 10 * (1 - qi) ** 2 + 6 * qo * qo,
         rows: (i) => {
           const p = ep(t, 23.25 + i * 0.07, 23.6 + i * 0.07, E.outCubic);
           const done = clamp((scanY - Q_ROWS[i][1]) / 30);
@@ -482,7 +484,7 @@ export function create(st, A, tl) {
       const aq = ui.outbound.regions.addToQueue;
       const pq = env(t, 26.15, 26.9, 0.12, 0.3);
       outb.ov('addq', [aq[0] - 6, aq[1] - 6, aq[2] - aq[0] + 12, aq[3] - aq[1] + 12], `border-radius:40px;border:3px solid ${rgba(C.orange, pq)};box-shadow:0 0 30px ${rgba(C.orange, 0.6 * pq)}`);
-      const stt = { x: CX, y: lerp(2400, 1390, oi), s: 0.66, rx: lerp(-30, 3, oi), o: clamp(oi * 2) * (1 - oo), z: lerp(0, -300, oo) };
+      const stt = { x: CX, y: lerp(2400, 1390, oi), s: 0.66, rx: lerp(-30, 3, oi), o: clamp(oi * 2) * (1 - oo), blur: 10 * (1 - oi) ** 2, z: lerp(0, -300, oo) };
       outb.set(stt);
       const b = outb.p((aq[0] + aq[2]) / 2, (aq[1] + aq[3]) / 2, stt);
       const sp = ep(t, 26.2, 26.5, E.inOutSine);

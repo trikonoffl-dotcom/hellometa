@@ -99,10 +99,11 @@ export function orderWave(ctx, o) {
 
 // ------------------------------------------------------------------ cards
 // state: 'incoming' | 'missed' | 'voicemail'. s: scale. ring: 0..1 shake amount.
-export function callCard(ctx, x, y, num, state, { s = 1, alpha = 1, ring = 0, t = 0, flip = 1 } = {}) {
+export function callCard(ctx, x, y, num, state, { s = 1, alpha = 1, ring = 0, t = 0, flip = 1, blur = 0 } = {}) {
   if (alpha <= 0.001) return;
   const w = 470, h = 100;
   ctx.save();
+  if (blur > 0.4) ctx.filter = `blur(${blur.toFixed(1)}px)`;
   ctx.translate(x, y);
   ctx.scale(s, s * flip);
   ctx.globalAlpha *= alpha;

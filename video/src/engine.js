@@ -44,7 +44,7 @@ export const E = {
   inExpo: (x) => (x === 0 ? 0 : Math.pow(2, 10 * x - 10)),
   outExpo: (x) => (x === 1 ? 1 : 1 - Math.pow(2, -10 * x)),
   inOutExpo: (x) => (x === 0 ? 0 : x === 1 ? 1 : x < 0.5 ? Math.pow(2, 20 * x - 10) / 2 : (2 - Math.pow(2, -20 * x + 10)) / 2),
-  outBack: (x, s = 1.70158) => 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2),
+  outBack: (x, s = 1.70158) => (x <= 0 ? 0 : x >= 1 ? 1 : 1 + (s + 1) * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2)),
 };
 // eased progress helper: ep(t, a, b, E.outCubic)
 export const ep = (t, a, b, f = E.inOutCubic) => f(prog(t, a, b));

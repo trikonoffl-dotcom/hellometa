@@ -248,7 +248,9 @@ export function create(st, A, tl) {
       const tm = cd.t0 + 0.38 + cd.ring;
       const state = t < tm ? 'incoming' : cd.vm ? 'voicemail' : 'missed';
       const flip = Math.abs(Math.cos(clamp((t - tm + 0.07) / 0.14) * Math.PI));
-      callCard(c1, x, y, cd.num, state, { s: 0.92 * (1 - 0.6 * q), alpha: (1 - q) * clamp((t - cd.t0) * 6), ring: 1, t, flip: Math.max(0.05, flip) });
+      const pv = cardPos(cd, t - 1 / 60);
+      const mb = clamp(Math.hypot(x - pv[0], y - pv[1]) / 7, 0, 9);
+      callCard(c1, x, y, cd.num, state, { blur: mb, s: 0.92 * (1 - 0.6 * q), alpha: (1 - q) * clamp((t - cd.t0) * 6), ring: 1, t, flip: Math.max(0.05, flip) });
       burst(c1, x - 180, y, t, tm, { n: 10, seed: cd.t0 * 100, color: '#9A9A9A', speed: 140, life: 0.6, size: 1.6 });
     }
     // statement
@@ -257,7 +259,7 @@ export function create(st, A, tl) {
     const o = { size: 120, weight: 800, align: 'center', tracking: -0.01 };
     trackIn(c1, 'MISSED CALLS', 960, 440, o, prog(t, 7.3, 7.9));
     const eq = ep(t, 7.6, 7.95, E.outBack);
-    if (eq > 0) {
+    if (eq > 0.001) {
       c1.save();
       c1.translate(960, 560);
       c1.scale(eq, eq);
@@ -381,7 +383,7 @@ export function create(st, A, tl) {
       const lineT = [18.35, 18.45, 18.9, 19.0, 19.45, 19.55, 19.75];
       details.set({
         x: lerp(2350, 1480, dIn), y: lerp(560, 545, dIn), z: lerp(0, -500, pb), s: 1.12, ry: lerp(-38, 0, dIn), o: clamp(dIn * 2),
-        rx: lerp(0, 88, dOut), blur: 6 * pb * (1 - dOut), bright: lerp(1, 0.6, pb),
+        rx: lerp(0, 88, dOut), blur: 6 * pb * (1 - dOut) + 10 * (1 - dIn) ** 2, bright: lerp(1, 0.6, pb),
         lines: (i) => ({ clip: ep(t, lineT[i], lineT[i] + (i === 5 ? 0.5 : 0.3), E.inOutSine) }),
         wave: (i) => {
           const u = i / 71;
@@ -406,7 +408,7 @@ export function create(st, A, tl) {
     revealLine(c1, 'from MetaWeb…', 110, 810, sm, prog(t, 19.65, 20.1), qo(3));
     // AI ANSWERED badge
     const ba = ep(t, 20.0, 20.35, E.outBack) * (1 - ep(t, 20.4, 20.65));
-    if (ba > 0) {
+    if (ba > 0.001) {
       c1.save();
       c1.translate(1480, 1010);
       c1.scale(ba, ba);
@@ -498,7 +500,7 @@ export function create(st, A, tl) {
       });
       if (scanP > 0 && scanP < 1) queue.ov('scan', [33, scanY - 2, 1494, 4], `background:#FFD39A;box-shadow:0 0 18px 4px ${rgba(C.orange, 0.8)}`);
       queue.set({
-        x: lerp(960, -300, qo), y: lerp(1400, 690, qi), s: 0.76, rx: lerp(32, 5, qi), ry: lerp(0, 38, qo), o: clamp(qi * 2) * (1 - qo),
+        x: lerp(960, -300, qo), y: lerp(1400, 690, qi), s: 0.76, rx: lerp(32, 5, qi), ry: lerp(0, 38, qo), o: clamp(qi * 2) * (1 - qo), blur: 10 * (1 - qi) ** 2 + 6 * qo * qo,
         rows: (i) => {
           const p = ep(t, 23.25 + i * 0.07, 23.6 + i * 0.07, E.outCubic);
           const r = Q_ROWS[i];
@@ -521,7 +523,7 @@ export function create(st, A, tl) {
       const aq = ui.outbound.regions.addToQueue;
       const pq = env(t, 26.15, 26.9, 0.12, 0.3);
       outb.ov('addq', [aq[0] - 6, aq[1] - 6, aq[2] - aq[0] + 12, aq[3] - aq[1] + 12], `border-radius:40px;border:3px solid ${rgba(C.orange, pq)};box-shadow:0 0 30px ${rgba(C.orange, 0.6 * pq)}`);
-      const st = { x: lerp(2400, 960, oi), y: 680, s: 0.78, ry: lerp(-38, 0, oi), rx: 4, o: clamp(oi * 2) * (1 - oo), z: lerp(0, -300, oo) };
+      const st = { x: lerp(2400, 960, oi), y: 680, s: 0.78, ry: lerp(-38, 0, oi), rx: 4, o: clamp(oi * 2) * (1 - oo), blur: 10 * (1 - oi) ** 2, z: lerp(0, -300, oo) };
       outb.set(st);
       // signal from "Add to queue" up to the APPOINTMENT node
       const b = outb.p((aq[0] + aq[2]) / 2, (aq[1] + aq[3]) / 2, { rz: 0, ...st });
