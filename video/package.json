@@ -1,0 +1,19 @@
+{
+  "name": "hellometa-stall-video",
+  "private": true,
+  "type": "module",
+  "description": "HelloMeta.ai exhibition stall motion film - deterministic HTML/canvas renderer",
+  "scripts": {
+    "render:16x9": "node tools/render.mjs --format 16x9",
+    "render:9x16": "node tools/render.mjs --format 9x16"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.5",
+    "@fontsource/inter-tight": "^5.2.5",
+    "@fontsource/jetbrains-mono": "^5.2.5",
+    "lucide-static": "^0.540.0",
+    "playwright-core": "^1.56.1",
+    "topojson-client": "^3.1.0",
+    "world-atlas": "^2.0.2"
+  }
+}
